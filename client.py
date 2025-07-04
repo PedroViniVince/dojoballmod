@@ -70,6 +70,7 @@ running = True
 clock = pygame.time.Clock()
 
 while running:
+    update_rects = []
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -84,14 +85,12 @@ while running:
         pygame.display.get_window_size()[0],
         pygame.display.get_window_size()[1],
     )
-    clock.tick(120)
+    clock.tick(80)
     send_data(client_socket, inputs)
     state = receive_data(client_socket)
 
-   # screen.fill("antiquewhite4")
-    screen.blit(background,(0,0))
-
-
+    screen.fill("antiquewhite4")
+    #screen.blit(background,(0,0))
 
     #campo
     pygame.draw.rect(screen, "antiquewhite3", (state.field_coords[0],state.field_coords[1],
@@ -101,6 +100,7 @@ while running:
 	
     # Bola
     pygame.draw.circle(screen, pygame.Color("white"), (int(state.ball.x), int(state.ball.y)), 30)
+    update_rects.append(screen.get_rect())
 
     # Jogadores
     for player in state.players.values():
@@ -112,6 +112,8 @@ while running:
         screen.blit(name_text, text_rect)
         pygame.draw.circle(screen, color, (int(player.x), int(player.y)), 45)
         pygame.draw.circle(screen, coloroutline, (int(player.x), int(player.y)), 45, width=5)
+        update_rects.append(pygame.Rect(player.x-45, player.y-45, 90, 90))
+        update_rects.append(text_rect)
 
     # Postes
     for post in state.posts.values():
@@ -135,16 +137,22 @@ while running:
         clock_state = "Paused"
     text_clock_surface = font2.render(f"{clock_state} : {clock_text}", True, pygame.Color("black"))
     screen.blit(text_clock_surface, (200, 15))
+    update_rects.append(text_clock_surface.get_rect(topleft=(200, 15)))
     
-    #FPS
-    screen.blit(font2.render(f"FPS: {int(clock.get_fps())}", True, pygame.Color("black")), (1500, 15))
-    
-    #Score
+    # FPS
+    fps_surface = font2.render(f"FPS: {int(clock.get_fps())}", True, pygame.Color("black"))
+    fps_rect = fps_surface.get_rect(topleft=(1500, 15))
+    screen.blit(fps_surface, fps_rect)
+    update_rects.append(fps_rect)
+
+    # Score
     score_text = f"{state.score_red} - {state.score_blue}"
     text_surface = font2.render(score_text, True, pygame.Color("black"))
-    screen.blit(text_surface, (960, 15))
+    score_rect = text_surface.get_rect(center=(960, 30))
+    screen.blit(text_surface, score_rect)
+    update_rects.append(score_rect)
     
-    pygame.display.flip()
+    pygame.display.update(update_rects)
 
 
 client_socket.close()
