@@ -58,8 +58,12 @@ from state import SCREEN_WIDTH, SCREEN_HEIGHT, MatchManager, MatchState
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-background = pygame.image.load('image.png')
+background = pygame.image.load('image.png').convert()
 background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.font.init()
+font1 = pygame.font.SysFont("comic sans", 24)
+font2 = pygame.font.SysFont("comic sans",36)
+
 
 from input import Input
 running = True
@@ -84,10 +88,10 @@ while running:
     send_data(client_socket, inputs)
     state = receive_data(client_socket)
 
-    screen.fill("antiquewhite4")
-    # screen.blit(background,(0,0))
+   # screen.fill("antiquewhite4")
+    screen.blit(background,(0,0))
 
-    pygame.font.init
+
 
     #campo
     pygame.draw.rect(screen, "antiquewhite3", (state.field_coords[0],state.field_coords[1],
@@ -103,8 +107,7 @@ while running:
         color = pygame.Color("cornflowerblue") if player.team == Team.BLUE else pygame.Color("crimson")
         coloroutline = pygame.Color("blue") if player.team == Team.BLUE else pygame.Color("red")
         name = player.name if player.name else "Unknown"
-        font = pygame.font.SysFont("comic sans", 24)
-        name_text = font.render(name, True, pygame.Color("black"))
+        name_text = font1.render(name, True, pygame.Color("black"))
         text_rect = name_text.get_rect(center=(int(player.x), int(player.y) - 50))
         screen.blit(name_text, text_rect)
         pygame.draw.circle(screen, color, (int(player.x), int(player.y)), 45)
@@ -119,7 +122,6 @@ while running:
     pygame.draw.rect(screen, "antiquewhite3", [0, 0, 1920, 50], 3)
     
     #clock
-    font = pygame.font.SysFont("comic sans",36)
     clock_text = int(state.match_manager.time_remaining)
     if state.match_manager.state == MatchState.PLAYING:
         clock_state = "Playing"
@@ -128,19 +130,18 @@ while running:
     elif state.match_manager.state == MatchState.BREAK:
         clock_state = "Break"
         pygame.draw.rect(screen, "antiquewhite4", [0, 500, 1920, 80])
-        screen.blit(font.render("Break", True, pygame.Color("black")), (900, 520))
+        screen.blit(font2.render("Break", True, pygame.Color("black")), (900, 520))
     elif state.match_manager.state == MatchState.PAUSED:
         clock_state = "Paused"
-    text_clock_surface = font.render(f"{clock_state} : {clock_text}", True, pygame.Color("black"))
+    text_clock_surface = font2.render(f"{clock_state} : {clock_text}", True, pygame.Color("black"))
     screen.blit(text_clock_surface, (200, 15))
     
     #FPS
-    screen.blit(font.render(f"FPS: {int(clock.get_fps())}", True, pygame.Color("black")), (1500, 15))
+    screen.blit(font2.render(f"FPS: {int(clock.get_fps())}", True, pygame.Color("black")), (1500, 15))
     
     #Score
-    font = pygame.font.SysFont("comic sans",36)
     score_text = f"{state.score_red} - {state.score_blue}"
-    text_surface = font.render(score_text, True, pygame.Color("black"))
+    text_surface = font2.render(score_text, True, pygame.Color("black"))
     screen.blit(text_surface, (960, 15))
     
     pygame.display.flip()
