@@ -63,7 +63,10 @@ background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.font.init()
 font1 = pygame.font.SysFont("comic sans", 24)
 font2 = pygame.font.SysFont("comic sans",36)
-
+pygame.display.set_caption("DojoBall Client")
+pygame.display.set_icon(pygame.image.load("icon.png"))
+pygame.mixer.music.load("music.ogg")
+pygame.mixer.music.play(loops=999)
 
 from input import Input
 running = True
@@ -100,14 +103,17 @@ while running:
 	
     # Bola
     pygame.draw.circle(screen, pygame.Color("white"), (int(state.ball.x), int(state.ball.y)), 30)
+    pygame.draw.circle(screen, pygame.Color("white"), (int(state.ball.x), int(state.ball.y)), 30, width=5)
     update_rects.append(screen.get_rect())
 
     # Jogadores
     for player in state.players.values():
         color = pygame.Color("cornflowerblue") if player.team == Team.BLUE else pygame.Color("crimson")
         coloroutline = pygame.Color("blue") if player.team == Team.BLUE else pygame.Color("red")
+        pygame.draw.circle(screen, color, (int(player.x), int(player.y)), 45)
+        pygame.draw.circle(screen, coloroutline, (int(player.x), int(player.y)), 45, width=5)
         name = player.name if player.name else "Unknown"
-        name_text = font1.render(name, True, pygame.Color("black"))
+        name_text = font1.render(name, True, pygame.Color("white"))
         text_rect = name_text.get_rect(center=(int(player.x), int(player.y) - 50))
         screen.blit(name_text, text_rect)
         pygame.draw.circle(screen, color, (int(player.x), int(player.y)), 45)
@@ -120,8 +126,8 @@ while running:
         pygame.draw.circle(screen, pygame.Color("cornsilk"), (int(post.x), int(post.y)), 15)
     
     #menu
-    pygame.draw.rect(screen, "antiquewhite4", [0, 0, 1920, 50])
-    pygame.draw.rect(screen, "antiquewhite3", [0, 0, 1920, 50], 3)
+    pygame.draw.rect(screen, "antiquewhite4", [0, 0, 1920, 95])
+    pygame.draw.rect(screen, "antiquewhite3", [0, 0, 1920, 95], 3)
     
     #clock
     clock_text = int(state.match_manager.time_remaining)
@@ -131,23 +137,24 @@ while running:
         clock_state = "Overtime"
     elif state.match_manager.state == MatchState.BREAK:
         clock_state = "Break"
-        pygame.draw.rect(screen, "antiquewhite4", [0, 500, 1920, 80])
-        screen.blit(font2.render("Break", True, pygame.Color("black")), (900, 520))
+        pygame.draw.rect(screen, "antiquewhite4", [0, 500, 1920, 90])
+        pygame.draw.rect(screen, "antiquewhite3", [0, 500, 1920, 90], 3)
+        screen.blit(font2.render("Break", True, pygame.Color("white")), (900, 520))
     elif state.match_manager.state == MatchState.PAUSED:
         clock_state = "Paused"
-    text_clock_surface = font2.render(f"{clock_state} : {clock_text}", True, pygame.Color("black"))
+    text_clock_surface = font2.render(f"{clock_state} : {clock_text}", True, pygame.Color("white"))
     screen.blit(text_clock_surface, (200, 15))
     update_rects.append(text_clock_surface.get_rect(topleft=(200, 15)))
     
     # FPS
-    fps_surface = font2.render(f"FPS: {int(clock.get_fps())}", True, pygame.Color("black"))
+    fps_surface = font2.render(f"FPS: {int(clock.get_fps())}", True, pygame.Color("white"))
     fps_rect = fps_surface.get_rect(topleft=(1500, 15))
     screen.blit(fps_surface, fps_rect)
     update_rects.append(fps_rect)
 
     # Score
     score_text = f"{state.score_red} - {state.score_blue}"
-    text_surface = font2.render(score_text, True, pygame.Color("black"))
+    text_surface = font2.render(score_text, True, pygame.Color("white"))
     score_rect = text_surface.get_rect(center=(960, 30))
     screen.blit(text_surface, score_rect)
     update_rects.append(score_rect)
